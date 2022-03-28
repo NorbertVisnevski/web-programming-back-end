@@ -10,12 +10,14 @@ public class CategoryLoadDTO
 
 public class CategoryRegisterDTO
 {
-    [Required]
+    [Required(AllowEmptyStrings = false, ErrorMessage = "Category name is required")]
     public string Name { get; set; }
 }
 
 public class CategoryEditDTO
 {
+    [Required(ErrorMessage = "Id is required")]
     public int Id { get; set; }
+    [Required(AllowEmptyStrings = false, ErrorMessage = "Category name is required")]
     public string Name { get; set; }
 }

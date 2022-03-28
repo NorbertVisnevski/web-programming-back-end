@@ -12,8 +12,8 @@ using WebProgrammingBackEnd.Data;
 namespace WebProgrammingBackEnd.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220324144046_M3")]
-    partial class M3
+    [Migration("20220327184553_role-seed")]
+    partial class roleseed
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -39,6 +39,21 @@ namespace WebProgrammingBackEnd.Migrations
                     b.ToTable("ProductCategory", (string)null);
                 });
 
+            modelBuilder.Entity("RoleUser", b =>
+                {
+                    b.Property<string>("RolesName")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RolesName", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("RoleUser");
+                });
+
             modelBuilder.Entity("WebProgrammingBackEnd.Entities.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -58,6 +73,30 @@ namespace WebProgrammingBackEnd.Migrations
                     b.ToTable("Category", (string)null);
                 });
 
+            modelBuilder.Entity("WebProgrammingBackEnd.Entities.Image", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<byte[]>("File")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Image", (string)null);
+                });
+
             modelBuilder.Entity("WebProgrammingBackEnd.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -66,14 +105,17 @@ namespace WebProgrammingBackEnd.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("BuyerId")
+                        .HasColumnType("int");
+
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("HouseNumber")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("HouseNumber")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -100,6 +142,8 @@ namespace WebProgrammingBackEnd.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BuyerId");
 
                     b.ToTable("Order", (string)null);
                 });
@@ -129,30 +173,24 @@ namespace WebProgrammingBackEnd.Migrations
                     b.ToTable("Product", (string)null);
                 });
 
-            modelBuilder.Entity("WebProgrammingBackEnd.Entities.SubOrder", b =>
+            modelBuilder.Entity("WebProgrammingBackEnd.Entities.Role", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    b.HasKey("Name");
 
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
+                    b.ToTable("Role", (string)null);
 
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("SubOrder", (string)null);
+                    b.HasData(
+                        new
+                        {
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            Name = "Customer"
+                        });
                 });
 
             modelBuilder.Entity("WebProgrammingBackEnd.Entities.User", b =>
@@ -163,8 +201,17 @@ namespace WebProgrammingBackEnd.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("HouseNumber")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -174,6 +221,12 @@ namespace WebProgrammingBackEnd.Migrations
 
                     b.Property<byte[]>("PasswordSalt")
                         .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Street")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Surname")
                         .HasColumnType("nvarchar(max)");
@@ -198,14 +251,25 @@ namespace WebProgrammingBackEnd.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WebProgrammingBackEnd.Entities.SubOrder", b =>
+            modelBuilder.Entity("RoleUser", b =>
                 {
-                    b.HasOne("WebProgrammingBackEnd.Entities.Order", null)
-                        .WithMany("SubOrders")
-                        .HasForeignKey("OrderId");
-
-                    b.HasOne("WebProgrammingBackEnd.Entities.Product", "Product")
+                    b.HasOne("WebProgrammingBackEnd.Entities.Role", null)
                         .WithMany()
+                        .HasForeignKey("RolesName")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebProgrammingBackEnd.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("WebProgrammingBackEnd.Entities.Image", b =>
+                {
+                    b.HasOne("WebProgrammingBackEnd.Entities.Product", "Product")
+                        .WithMany("Images")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -215,7 +279,60 @@ namespace WebProgrammingBackEnd.Migrations
 
             modelBuilder.Entity("WebProgrammingBackEnd.Entities.Order", b =>
                 {
+                    b.HasOne("WebProgrammingBackEnd.Entities.User", "Buyer")
+                        .WithMany("Orders")
+                        .HasForeignKey("BuyerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsMany("WebProgrammingBackEnd.Entities.SubOrder", "SubOrders", b1 =>
+                        {
+                            b1.Property<int>("OrderId")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"), 1L, 1);
+
+                            b1.Property<int>("Count")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("ProductId")
+                                .HasColumnType("int");
+
+                            b1.HasKey("OrderId", "Id");
+
+                            b1.HasIndex("ProductId");
+
+                            b1.ToTable("SubOrder");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+
+                            b1.HasOne("WebProgrammingBackEnd.Entities.Product", "Product")
+                                .WithMany()
+                                .HasForeignKey("ProductId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+
+                            b1.Navigation("Product");
+                        });
+
+                    b.Navigation("Buyer");
+
                     b.Navigation("SubOrders");
+                });
+
+            modelBuilder.Entity("WebProgrammingBackEnd.Entities.Product", b =>
+                {
+                    b.Navigation("Images");
+                });
+
+            modelBuilder.Entity("WebProgrammingBackEnd.Entities.User", b =>
+                {
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

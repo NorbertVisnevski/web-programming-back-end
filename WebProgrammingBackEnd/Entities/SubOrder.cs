@@ -1,5 +1,8 @@
-﻿namespace WebProgrammingBackEnd.Entities
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace WebProgrammingBackEnd.Entities
 {
+    [Owned]
     public class SubOrder
     {
         public int Id { get; set; }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebProgrammingBackEnd.Data;
@@ -36,17 +37,18 @@ namespace WebProgrammingBackEnd.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProduct(int id)
         {
-            var product = await _context.Products.Include(p => p.Categories).FirstOrDefaultAsync(p => p.Id == id);
+            var product = await _context.Products.Include(p => p.Categories).Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == id);
             if(product == null)
                 return NotFound();
             return Ok(_mapper.Map<ProductLoadDTO>(product));
         }
 
+        [Authorize(Policy = "Admin" )]
         [HttpPost]
         public async Task<IActionResult> AddProduct([FromBody] ProductRegisterDTO productDTO)
         {
             var product = _mapper.Map<Product>(productDTO);
-            product.Categories.Clear();
+            product.Categories = new List<Category>();
             foreach (var entry in productDTO.Categories)
             {
                 var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name.Equals(entry.Name));
@@ -63,10 +65,11 @@ namespace WebProgrammingBackEnd.Controllers
 
         }
 
+        [Authorize(Policy = "Admin")]
         [HttpPut]
         public async Task<IActionResult> UpdateProduct([FromBody] ProductEditDTO productDTO)
         {
-            var product = await _context.Products.Include(p=>p.Categories).FirstOrDefaultAsync(p => p.Id == productDTO.Id);
+            var product = await _context.Products.Include(p=>p.Categories).Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == productDTO.Id);
             if (product == null)
                 return NotFound();
             product.Categories.Clear();
@@ -86,6 +89,7 @@ namespace WebProgrammingBackEnd.Controllers
             return Ok(_mapper.Map<ProductLoadDTO>(product));
         }
 
+        [Authorize(Policy = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
@@ -101,6 +105,7 @@ namespace WebProgrammingBackEnd.Controllers
         {
             var products = _context.Products
                .Include(p => p.Categories)
+               .Include(p => p.Images)
                .OrderBy(p => p.Price)
                .AsQueryable();
             if (productParams.Categories != null)

@@ -10,14 +10,22 @@ namespace WebProgrammingBackEnd.Helpers
         {
             CreateMap<Category, CategoryLoadDTO>();
             CreateMap<Product, ProductLoadDTO>();
-            CreateMap<ProductRegisterDTO, Product>();
-            CreateMap<ProductEditDTO, Product>();
+            CreateMap<ProductRegisterDTO, Product>()
+                .ForMember(dest => dest.Categories, act => act.Ignore());
+            CreateMap<ProductEditDTO, Product>()
+                .ForMember(dest => dest.Categories, act => act.Ignore());
             CreateMap<CategoryRegisterDTO, Category>();
             CreateMap<CategoryEditDTO, Category>();
-            CreateMap<OrderRegisterDTO,Order>();
+            CreateMap<OrderRegisterDTO,Order>()
+            .ForMember(dest => dest.SubOrders, act => act.Ignore());
             CreateMap<OrderEditDTO, Order>();
             CreateMap<Order,OrderLoadDTO>();
             CreateMap<SubOrder,SubOrderLoadDTO>();
+            CreateMap<UserRegisterDTO, User>();
+            CreateMap<User, UserLoadDTO>();
+            CreateMap<UserEditDTO, User>();
+            CreateMap<Role, string>().ConvertUsing(x => x.Name);
+            CreateMap<Image, int>().ConvertUsing(x => x.Id);
         }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebProgrammingBackEnd.Data;
 
@@ -11,9 +12,10 @@ using WebProgrammingBackEnd.Data;
 namespace WebProgrammingBackEnd.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220327182201_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +36,7 @@ namespace WebProgrammingBackEnd.Migrations
 
                     b.HasIndex("ProductsId");
 
-                    b.ToTable("CategoryProduct");
+                    b.ToTable("ProductCategory", (string)null);
                 });
 
             modelBuilder.Entity("RoleUser", b =>
@@ -49,14 +51,7 @@ namespace WebProgrammingBackEnd.Migrations
 
                     b.HasIndex("UsersId");
 
-                    b.ToTable("UserRole", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            RolesName = "Admin",
-                            UsersId = 1
-                        });
+                    b.ToTable("RoleUser");
                 });
 
             modelBuilder.Entity("WebProgrammingBackEnd.Entities.Category", b =>
@@ -68,9 +63,12 @@ namespace WebProgrammingBackEnd.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("Name");
 
                     b.ToTable("Category", (string)null);
                 });
@@ -183,16 +181,6 @@ namespace WebProgrammingBackEnd.Migrations
                     b.HasKey("Name");
 
                     b.ToTable("Role", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Name = "Admin"
-                        },
-                        new
-                        {
-                            Name = "Customer"
-                        });
                 });
 
             modelBuilder.Entity("WebProgrammingBackEnd.Entities.User", b =>
@@ -212,7 +200,7 @@ namespace WebProgrammingBackEnd.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("HouseNumber")
+                    b.Property<int>("HouseNumber")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -236,15 +224,6 @@ namespace WebProgrammingBackEnd.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("User", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Email = "admin@admin.com",
-                            PasswordHash = new byte[] { 98, 47, 123, 155, 158, 137, 168, 193, 124, 17, 210, 77, 117, 82, 218, 255, 74, 117, 200, 31, 57, 141, 179, 36, 83, 6, 41, 249, 56, 155, 45, 220, 154, 217, 196, 159, 250, 90, 226, 23, 187, 185, 175, 169, 238, 157, 87, 181, 250, 150, 98, 52, 158, 168, 11, 159, 171, 122, 136, 240, 245, 102, 54, 205 },
-                            PasswordSalt = new byte[] { 166, 124, 64, 31, 142, 10, 188, 88, 226, 119, 134, 229, 150, 103, 237, 23, 129, 36, 5, 208, 120, 88, 22, 169, 30, 228, 203, 135, 41, 227, 255, 240, 105, 164, 138, 28, 222, 220, 128, 90, 36, 215, 31, 146, 0, 45, 105, 167, 0, 32, 124, 87, 71, 186, 135, 163, 178, 112, 44, 37, 85, 144, 155, 199, 143, 255, 241, 132, 200, 226, 52, 78, 18, 32, 35, 59, 62, 103, 50, 209, 51, 22, 233, 49, 11, 20, 120, 127, 155, 244, 60, 28, 97, 6, 49, 6, 77, 186, 128, 213, 189, 55, 16, 56, 158, 203, 96, 172, 175, 91, 236, 251, 59, 182, 65, 201, 113, 27, 23, 11, 250, 8, 147, 207, 96, 48, 100, 21 }
-                        });
                 });
 
             modelBuilder.Entity("CategoryProduct", b =>
