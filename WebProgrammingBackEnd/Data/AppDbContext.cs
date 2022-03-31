@@ -24,11 +24,6 @@ namespace WebProgrammingBackEnd.Data
             modelBuilder.Entity<Role>().ToTable("Role");
             modelBuilder.Entity<Image>().ToTable("Image");
 
-            //modelBuilder
-            //    .Entity<Category>()
-            //    .HasAlternateKey(c => c.Name);
-
-
             modelBuilder.Entity<Role>().HasData(
                 new { Name = "Admin" },
                 new { Name = "Customer" }
@@ -37,7 +32,7 @@ namespace WebProgrammingBackEnd.Data
             byte[] passwordHash, passwordSalt;
             CreatePasswordHash("admin", out passwordHash, out passwordSalt);
             modelBuilder.Entity<User>().HasData(
-                new { Id = 1, Email = "admin@admin.com" , PasswordHash = passwordHash, PasswordSalt = passwordSalt }
+                new { Id = 1, Email = "admin@admin.com", PasswordHash = passwordHash, PasswordSalt = passwordSalt }
                 );
 
 
@@ -45,7 +40,7 @@ namespace WebProgrammingBackEnd.Data
                 .HasMany(u => u.Roles)
                 .WithMany(r => r.Users)
                 .UsingEntity(e => e.ToTable("UserRole")
-                .HasData(new { UsersId = 1, RolesName = "Admin" } ));
+                .HasData(new { UsersId = 1, RolesName = "Admin" }));
 
 
         }

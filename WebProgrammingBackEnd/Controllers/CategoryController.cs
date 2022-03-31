@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebProgrammingBackEnd.Data;
@@ -37,7 +32,7 @@ namespace WebProgrammingBackEnd.Controllers
         public async Task<ActionResult> GetCategory(int categoryId)
         {
             var category = await _context.Categories.FindAsync(categoryId);
-            if(category == null)
+            if (category == null)
             {
                 return NotFound();
             }
@@ -49,10 +44,10 @@ namespace WebProgrammingBackEnd.Controllers
         public async Task<IActionResult> PutCategory(CategoryEditDTO category)
         {
             var categoryFromRepo = await _context.Categories.FindAsync(category.Id);
-            if(categoryFromRepo == null)
+            if (categoryFromRepo == null)
                 return NotFound();
             var categorySameName = await _context.Categories.FirstOrDefaultAsync(x => x.Name.Equals(category.Name));
-            if(categorySameName != null)
+            if (categorySameName != null)
             {
                 return BadRequest(new { errors = new { Name = new[] { "Category name already in use" } } });
             }
@@ -65,7 +60,7 @@ namespace WebProgrammingBackEnd.Controllers
         [HttpPost]
         public async Task<ActionResult> PostCategory(CategoryRegisterDTO category)
         {
-            var _category = await _context.Categories.FirstOrDefaultAsync(x=> x.Name.Equals(category.Name));
+            var _category = await _context.Categories.FirstOrDefaultAsync(x => x.Name.Equals(category.Name));
             if (_category != null)
             {
                 return BadRequest(new { errors = new { Name = new[] { "Category name already in use" } } });

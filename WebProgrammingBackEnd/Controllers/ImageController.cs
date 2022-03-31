@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebProgrammingBackEnd.Data;
@@ -23,10 +22,10 @@ namespace WebProgrammingBackEnd.Controllers
 
         [Authorize(Policy = "Admin")]
         [HttpPost]
-        public async Task<ActionResult> UploadImages([FromForm]ICollection<IFormFile> files, [FromQuery]int productId)
+        public async Task<ActionResult> UploadImages([FromForm] ICollection<IFormFile> files, [FromQuery] int productId)
         {
-            var product = await _context.Products.Include(x => x.Images).FirstOrDefaultAsync(x=> x.Id == productId);
-            if(product == null || files.Count == 0)
+            var product = await _context.Products.Include(x => x.Images).FirstOrDefaultAsync(x => x.Id == productId);
+            if (product == null || files.Count == 0)
                 return NotFound("Resource not found");
 
             var allowedFiles = new[] { "jpg", "png" };
@@ -37,11 +36,11 @@ namespace WebProgrammingBackEnd.Controllers
                 {
                     return BadRequest("Files should be images");
                 }
-                if(file.Length > 2e6)
+                if (file.Length > 1e6)
                 {
-                    return BadRequest("File exceeds max size of 2MB");
+                    return BadRequest("File exceeds max size of 1MB");
                 }
-                var image = new Image { Type=extension };
+                var image = new Image { Type = extension };
                 using (var ms = new MemoryStream())
                 {
                     file.CopyTo(ms);

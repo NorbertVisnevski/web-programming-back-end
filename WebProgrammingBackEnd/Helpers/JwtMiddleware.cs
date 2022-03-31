@@ -1,8 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
 using System.Text;
 using WebProgrammingBackEnd.Data;
 
@@ -43,16 +40,16 @@ namespace WebProgrammingBackEnd.Helpers
                 var user = _context.Users.Include(x => x.Roles).FirstOrDefault(x => x.Id == userId && x.Email.Equals(email));
                 if (user != null)
                 {
-                    var roles = jwtToken.Claims.Where(x => x.Type == "role").Select(x=>x.Value).ToList();
+                    var roles = jwtToken.Claims.Where(x => x.Type == "role").Select(x => x.Value).ToList();
                     foreach (var role in roles)
                     {
-                        if(!user.Roles.Any(x=>x.Name == role))
+                        if (!user.Roles.Any(x => x.Name == role))
                         {
                             throw new Exception("JwtValidation error");
                         }
                     }
                     context.Items["User"] = user;
-                } 
+                }
             }
             catch
             {

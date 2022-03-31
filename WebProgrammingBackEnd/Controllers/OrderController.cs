@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using WebProgrammingBackEnd.Data;
 using WebProgrammingBackEnd.DTOs;
 using WebProgrammingBackEnd.Entities;
@@ -48,6 +48,11 @@ namespace WebProgrammingBackEnd.Controllers
         {
             var orders = await _context.Orders.Include(x => x.SubOrders).ThenInclude(x => x.Product).Where(x => x.BuyerId == userId).ToListAsync();
             return Ok(_mapper.Map<List<OrderLoadDTO>>(orders));
+        }
+
+        private bool HasAuthorityToEdit(ClaimsPrincipal user, int userId)
+        {
+            throw new NotImplementedException();
         }
 
         [Authorize]
@@ -97,7 +102,7 @@ namespace WebProgrammingBackEnd.Controllers
         public async Task<IActionResult> Delete(int orderId)
         {
             var order = await _context.Orders.FindAsync(orderId);
-            if(order == null)
+            if (order == null)
             {
                 return BadRequest();
             }

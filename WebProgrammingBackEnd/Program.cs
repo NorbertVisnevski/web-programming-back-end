@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Configuration;
 using System.Security.Claims;
 using System.Text;
 using WebProgrammingBackEnd.Data;
@@ -13,6 +12,18 @@ builder.Services.AddControllers();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddTransient<DataSeeder>();
+
+void SeedData(IHost host)
+{
+    var scopedFactory = host.Services.GetService<IServiceScopeFactory>();
+
+    using (var scope = scopedFactory.CreateScope())
+    {
+        var service = scope.ServiceProvider.GetService<DataSeeder>();
+        service.Seed(100);
+    }
+}
 
 builder.Services.AddCors();
 
@@ -31,7 +42,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII
             .GetBytes(builder.Configuration.GetSection("AppSettings:Secret").Value)),
-            ValidateLifetime = true,
             ValidateIssuer = false,
             ValidateAudience = false
         };
@@ -43,6 +53,11 @@ builder.Services.AddSwaggerGen();
 
 
 var app = builder.Build();
+
+if (args.Length == 1 && args[0] == "seed")
+{
+    SeedData(app);
+}
 
 if (app.Environment.IsDevelopment())
 {

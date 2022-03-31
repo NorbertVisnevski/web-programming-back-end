@@ -24,7 +24,7 @@ public class ProductRegisterDTO
     [Min(0, ErrorMessage = "Can't have negative stock")]
     public int Stock { get; set; }
     [Required]
-    [MinLength(1, ErrorMessage = "Sould contain at least onne category")]
+    [MinLength(1, ErrorMessage = "Sould contain at least one category")]
     public ICollection<CategoryRegisterDTO> Categories { get; set; }
 }
 

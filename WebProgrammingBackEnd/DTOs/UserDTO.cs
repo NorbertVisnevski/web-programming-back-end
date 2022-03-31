@@ -1,5 +1,4 @@
 ﻿using DataAnnotationsExtensions;
-using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using WebProgrammingBackEnd.Validators;
 
@@ -26,7 +25,7 @@ public class UserLoginDTO
     public string Password { get; set; }
 }
 
-public class UserEditDTO 
+public class UserEditDTO
 {
     [Required(ErrorMessage = "Id is required")]
     public int Id { get; set; }
@@ -38,7 +37,7 @@ public class UserEditDTO
     [Min(1, ErrorMessage = "House number should be a positive number")]
     public int? HouseNumber { get; set; }
     public string PhoneNumber { get; set; }
-   
+
 }
 
 public class UserLoadDTO
@@ -50,7 +49,7 @@ public class UserLoadDTO
     public string Country { get; set; }
     public string City { get; set; }
     public string Street { get; set; }
-    public int HouseNumber { get; set; }
+    public int? HouseNumber { get; set; }
     public string PhoneNumber { get; set; }
     public ICollection<string> Roles { get; set; }
 }

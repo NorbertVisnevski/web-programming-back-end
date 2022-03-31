@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using WebProgrammingBackEnd.Data;
 using WebProgrammingBackEnd.DTOs;
 using WebProgrammingBackEnd.Entities;
@@ -39,14 +33,14 @@ namespace WebProgrammingBackEnd.Controllers
             var user = await Register(_mapper.Map<User>(userDTO), userDTO.Password);
             var token = GenerateToken(user);
             var tokenHandler = new JwtSecurityTokenHandler();
-            return Ok(new {User = _mapper.Map<UserLoadDTO>(user), Token = tokenHandler.WriteToken(token) } );
-            
+            return Ok(new { User = _mapper.Map<UserLoadDTO>(user), Token = tokenHandler.WriteToken(token) });
+
         }
         [Authorize(Policy = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetUsers()
         {
-            var users = await _context.Users.Include(x=>x.Roles).ToListAsync();
+            var users = await _context.Users.Include(x => x.Roles).ToListAsync();
             return Ok(_mapper.Map<List<UserLoadDTO>>(users));
         }
 
@@ -54,8 +48,8 @@ namespace WebProgrammingBackEnd.Controllers
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetUser(int userId)
         {
-            var user = await _context.Users.Include(x => x.Roles).FirstOrDefaultAsync(x=> x.Id == userId);
-            if(user == null)
+            var user = await _context.Users.Include(x => x.Roles).FirstOrDefaultAsync(x => x.Id == userId);
+            if (user == null)
                 return NotFound();
             return Ok(_mapper.Map<UserLoadDTO>(user));
         }
@@ -70,6 +64,11 @@ namespace WebProgrammingBackEnd.Controllers
             _mapper.Map(userDTO, user);
             await _context.SaveChangesAsync();
             return Ok(_mapper.Map<UserLoadDTO>(user));
+        }
+
+        private bool HasAuthorityToEdit(ClaimsPrincipal user, int id)
+        {
+            throw new NotImplementedException();
         }
 
         [Authorize(Policy = "Admin")]

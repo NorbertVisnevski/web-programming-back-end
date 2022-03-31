@@ -29,21 +29,21 @@ namespace WebProgrammingBackEnd.Controllers
 
             var products = await GetProductsByParams(productParams);
 
-            //Response.AddPagination(products.CurrentPage, products.PageSize, products.TotalCount, products.TotalPages);
+            Response.AddPagination(products.CurrentPage, products.PageSize, products.TotalCount, products.TotalPages);
 
-            return Ok(_mapper.Map<IEnumerable<ProductLoadDTO>>(products));
+            return Ok(_mapper.Map<List<ProductLoadDTO>>(products));
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProduct(int id)
         {
             var product = await _context.Products.Include(p => p.Categories).Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == id);
-            if(product == null)
+            if (product == null)
                 return NotFound();
             return Ok(_mapper.Map<ProductLoadDTO>(product));
         }
 
-        [Authorize(Policy = "Admin" )]
+        [Authorize(Policy = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddProduct([FromBody] ProductRegisterDTO productDTO)
         {
@@ -69,7 +69,7 @@ namespace WebProgrammingBackEnd.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateProduct([FromBody] ProductEditDTO productDTO)
         {
-            var product = await _context.Products.Include(p=>p.Categories).Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == productDTO.Id);
+            var product = await _context.Products.Include(p => p.Categories).Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == productDTO.Id);
             if (product == null)
                 return NotFound();
             product.Categories.Clear();
@@ -94,14 +94,14 @@ namespace WebProgrammingBackEnd.Controllers
         public async Task<IActionResult> DeleteProduct(int id)
         {
             var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
-            if(product == null)
+            if (product == null)
                 return NotFound();
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
             return NoContent();
         }
 
-        private Task<List<Product>> GetProductsByParams(ProductParams productParams)
+        private async Task<PageList<Product>> GetProductsByParams(ProductParams productParams)
         {
             var products = _context.Products
                .Include(p => p.Categories)
@@ -112,14 +112,13 @@ namespace WebProgrammingBackEnd.Controllers
             {
                 products = products.Where(x => x.Categories.Any(c => productParams.Categories.Contains(c.Name)));
             }
-            if (productParams.Query != null)
-            {
-                var query = productParams.Query;
-                products = products.Where(x => x.Caption.Contains(query) || x.Description.Contains(query) || x.Categories.Any(c => c.Name.Contains(query)));
-            }
-            if ((bool)(productParams.OrderPrice?.Equals("descending")))
+            if ((bool)(productParams.Order?.Equals("descending")))
             {
                 products = products.OrderByDescending(x => x.Price);
+            }
+            if (productParams.InStock == true)
+            {
+                products = products.Where(x => x.Stock > 0);
             }
             if (productParams.MaxPrice != null)
             {
@@ -129,8 +128,7 @@ namespace WebProgrammingBackEnd.Controllers
             {
                 products = products.Where(x => x.Price >= productParams.MinPrice);
             }
-            //return await PageList<Product>.CreateAsync(products, productParams.PageNumber, productParams.PageSize);
-            return products.ToListAsync();
+            return await PageList<Product>.CreateAsync(products, productParams.PageNumber, productParams.PageSize);
         }
     }
 }
